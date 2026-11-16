@@ -19,7 +19,8 @@ server/domain.js       stages, auto temperature, Today board, document numbering
 server/leadscore.js    lead temperature from the conversation content (claude -p, no tools), chat worker, every 60 s
 server/documents.js    quotes → invoices → receipts, payments; server/pdf.js renders PDFs with Playwright
 server/chat.js         `claude -p --output-format stream-json` per turn, output in data/chat-runs/<chat>/; modes build (all tools)
-                       and edit (CRM MCP + web only); per-turn undo. CRM_HOSTED=1 forces edit
+                       and edit (CRM MCP + web only); per-turn undo. CRM_HOSTED=1: build only from the web panel (chat without origin),
+                       WhatsApp/scheduled/any origin always edit; cwd = repo
 server/chat-worker.js  chat HTTP endpoints, lead scoring, scheduler (scheduled jobs) and connector polling in their own process
 server/mcp.js          MCP tools crm_* used by Claude from the chat (writes via the API with x-actor: claude → undoable)
 server/messages.js     Inbox: threads per client/number, WhatsApp export import, client matching by phone
@@ -32,14 +33,17 @@ server/jobs.js, scheduler.js, cron.js  Programados: reminders, briefings and tas
 server/push.js         PWA + Web Push
 server/reports.js      PDF/XLSX reports for the chat
 server/taskcontext.js, suggest.js  AI helpers (task context, suggestions)
-server/gateway.js      production: serves dist/, proxies /api to API/worker, strips x-actor, /healthz, Cloudflare Access JWT check
+server/gateway.js      server entry :8080: proxies /api to API/worker and the UI to Vite (CRM_UI=vite, HMR websocket) or serves dist/;
+                       strips x-actor, /healthz, Cloudflare Access JWT check on requests and websockets
 web/src                React + React Query + Tailwind v4; lib/live.js listens to /api/events (SSE) and invalidates all queries
 ```
 
 ## Production / cloud (deploy/README.md)
 - `Dockerfile` + `docker-compose.yml` (crm + cloudflared with `TUNNEL_TOKEN`), `.env` from `deploy/env.example`.
+- The repo is mounted at /app and `deploy/start-hosted.sh` runs it like dev (API --watch, worker, Vite HMR, gateway), so
+  Build mode from the panel edits the server's code live and commits in that checkout (node_modules in a volume,
+  reinstalled when package-lock changes). The server checkout can diverge from GitHub: `git pull` may need a merge.
 - With `CF_ACCESS_TEAM` + `CF_ACCESS_AUD` every request needs a valid Cloudflare Access JWT.
-- `CRM_HOSTED=1` forces chat mode edit (no Bash/Edit/Write on the server).
 - Claude CLI auth: `CLAUDE_CODE_OAUTH_TOKEN` (`claude setup-token`, Claude subscription) or `ANTHROPIC_API_KEY`.
 - `deploy/cloudshell.sh`: creates the Lightsail instance from AWS CloudShell and starts everything.
 

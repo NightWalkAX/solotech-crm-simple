@@ -34,7 +34,8 @@ Abre `https://crm.<dominio>` → login de Access → Integraciones → **Emisor 
 `cd ~/crm && git pull && docker compose up -d --build`
 
 ## Notas
-- `CRM_HOSTED=1` (en la imagen): el chat siempre corre en modo Edit (solo herramientas del CRM + web), nunca Bash ni
-  edición de archivos en el servidor.
+- Modos del chat (`CRM_HOSTED=1`): **Build** solo desde el panel web (detrás de Cloudflare Access): edita el código del
+  servidor en vivo y hace commit en `~/crm`. **WhatsApp, jobs programados y todo lo demás: siempre Edit** (solo datos del CRM).
+- Como Build hace commits en el servidor, `git pull` puede pedir merge con lo que trae GitHub.
 - La IA usa la cuenta de Claude del cliente: `claude setup-token` (suscripción) o su API key.
 - Transcripción de notas de voz (Whisper) no viene en la imagen.

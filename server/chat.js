@@ -293,12 +293,13 @@ export function follow(chatId, fn) {
 /** extraPrompt: appended to the system prompt of this turn only (scheduler.js: scheduled-job context). */
 export function runTurn({ chatId, message, clientId, mode = 'build', origin, title, extraPrompt }) {
   if (!MODES[mode]) mode = 'build';
-  // Hosted (CRM_HOSTED=1, cloud server): never give the AI Bash/Edit/Write on the server, only the CRM data tools.
-  if (HOSTED) mode = 'edit';
   let chat = chatId ? getRow('chats', chatId) : null;
   if (!chat || chat.deleted_at) {
     chat = insertRow('chats', { title: title || message.slice(0, 60), client_id: clientId ?? null, origin: origin ?? null }, 'system');
   }
+  // Hosted (CRM_HOSTED=1, cloud server): Build (Bash/Edit/Write on the server) only from the web panel, which sits behind
+  // Cloudflare Access. WhatsApp, scheduled jobs and every other origin always run Edit (CRM data tools only).
+  if (HOSTED && (origin || chat.origin)) mode = 'edit';
   if (running.has(chat.id)) throw new Error('Esta conversación ya está trabajando; espera o detenla.');
   insertRow('chat_messages', { chat_id: chat.id, role: 'user', text: message }, 'system');
 
@@ -318,9 +319,10 @@ export function runTurn({ chatId, message, clientId, mode = 'build', origin, tit
   ];
   if (chat.session_id) args.push('--resume', chat.session_id);
 
-  // cwd = home so the chat shares the owner's Claude memory and skills with their terminal sessions.
+  // cwd = home so the chat shares the owner's Claude memory and skills with their terminal sessions; hosted = the repo
+  // (CLAUDE.md, git), since the server's home has nothing else.
   const [cmd, ...pre] = [...LAUNCHER, '/bin/sh', '-c', SCRIPT, CLAUDE, ...args];
-  spawn(cmd, pre, { cwd: HOME, env: { ...process.env, CRM_CHAT: '1', RUN_DIR: dir }, detached: true, stdio: 'ignore' }).unref();
+  spawn(cmd, pre, { cwd: HOSTED ? ROOT : HOME, env: { ...process.env, CRM_CHAT: '1', RUN_DIR: dir }, detached: true, stdio: 'ignore' }).unref();
   new Run(chat.id);
   changed('chats', chat.id);
   return chat.id;
