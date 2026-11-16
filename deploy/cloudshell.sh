@@ -11,7 +11,8 @@ secret() { local v; read -rsp "$1: " v; echo >&2; echo "$v"; }
 
 REGION=$(ask "Región AWS" "${AWS_REGION:-us-east-1}")
 NAME=$(ask "Nombre de la instancia" "crm")
-BUNDLE=$(ask "Plan (small_3_0 = 2 GB ~US\$12, medium_3_0 = 4 GB)" "small_3_0")
+BUNDLE=$(ask "Plan (medium_3_0 = 4 GB ~US\$24, small_3_0 = 2 GB ~US\$12)" "medium_3_0")
+WHISPER=small; [ "$BUNDLE" = small_3_0 ] && WHISPER=base
 AZ="${REGION}a"
 echo "--- Secretos (no se muestran al escribir) ---"
 TUNNEL_TOKEN=$(secret "TUNNEL_TOKEN de Cloudflare")
@@ -73,6 +74,7 @@ printf '%s\n' \
   "CF_ACCESS_TEAM=$CF_TEAM" \
   "CF_ACCESS_AUD=$CF_AUD" \
   "TZ=America/Guyana" \
+  "WHISPER_MODEL=$WHISPER" \
   | $SSH 'umask 077; cat > ~/crm/.env'
 $SSH 'sudo chown -R 1000:1000 ~/crm/data ~/crm/claude-home'
 

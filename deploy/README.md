@@ -11,7 +11,7 @@ Arquitectura: una instancia Lightsail con Docker → contenedor `crm` (UI + API 
    equipo (`<team>.cloudflareaccess.com`).
 
 ## 2. Lightsail
-1. Crear instancia Linux → **Ubuntu 24.04**, plan de **2 GB RAM** (≈ US$12/mes) o más. Sin abrir puertos extra
+1. Crear instancia Linux → **Ubuntu 24.04**, plan de **4 GB RAM** (≈ US$24/mes; con 2 GB usa `WHISPER_MODEL=base`). Sin abrir puertos extra
    (en Networking deja solo SSH, y puedes restringirlo a tu IP).
 2. Activa **automatic snapshots** (instancia → Snapshots).
 3. O todo de una vez desde **AWS CloudShell**: `bash <(curl -fsSL https://raw.githubusercontent.com/NightWalkAX/solotech-crm-simple/main/deploy/cloudshell.sh)`
@@ -38,4 +38,5 @@ Abre `https://crm.<dominio>` → login de Access → Integraciones → **Emisor 
   servidor en vivo y hace commit en `~/crm`. **WhatsApp, jobs programados y todo lo demás: siempre Edit** (solo datos del CRM).
 - Como Build hace commits en el servidor, `git pull` puede pedir merge con lo que trae GitHub.
 - La IA usa la cuenta de Claude del cliente: `claude setup-token` (suscripción) o su API key.
-- Transcripción de notas de voz (Whisper) no viene en la imagen.
+- Notas de voz: faster-whisper en la imagen; el modelo (`WHISPER_MODEL`, small por defecto) se descarga la primera vez a `data/whisper-models`.
+- Subir de plan: `deploy/lightsail-resize.sh` desde CloudShell (apaga el CRM, snapshot, instancia nueva, arranca; la vieja queda apagada).

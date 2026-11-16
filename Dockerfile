@@ -4,10 +4,17 @@ FROM node:24-bookworm-slim
 
 ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright \
     CRM_HOSTED=1 \
+    WHISPER_PYTHON=/opt/whisper/bin/python \
+    WHISPER_MODEL=small \
+    HF_HOME=/app/data/whisper-models \
     TZ=America/Guyana
 
-RUN apt-get update && apt-get install -y --no-install-recommends python3 make g++ ca-certificates curl tini sqlite3 git \
+RUN apt-get update && apt-get install -y --no-install-recommends python3 python3-venv make g++ ca-certificates curl tini sqlite3 git \
     && rm -rf /var/lib/apt/lists/*
+
+# Voice notes: faster-whisper on CPU (server/transcribe.js). Model downloads on first use into data/ (persists);
+# WHISPER_MODEL=base in .env for 2 GB instances, small (default) needs 4 GB.
+RUN python3 -m venv /opt/whisper && /opt/whisper/bin/pip install --no-cache-dir faster-whisper 'av<16'
 
 # Claude Code CLI: the chat and the AI helpers run `claude -p` (CLAUDE_CODE_OAUTH_TOKEN or ANTHROPIC_API_KEY).
 RUN npm install -g @anthropic-ai/claude-code
