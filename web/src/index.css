@@ -1,0 +1,46 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --color-ink: #0b1626;
+  --color-amber: #f5a524;
+  --color-brand: #2563eb;
+}
+
+html, body, #root { height: 100%; }
+body { @apply bg-slate-50 text-slate-800 antialiased; }
+
+@utility card { @apply rounded-lg border border-slate-200 bg-white; }
+@utility btn { @apply inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition disabled:opacity-50; }
+@utility btn-primary { @apply btn bg-ink text-white hover:bg-slate-700; }
+@utility btn-ghost { @apply btn text-slate-600 hover:bg-slate-100; }
+@utility input { @apply w-full rounded-md border border-slate-300 bg-white px-2.5 py-1.5 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20; }
+@utility label { @apply mb-1 block text-xs font-medium uppercase tracking-wide text-slate-500; }
+
+/* Markdown inside chat answers */
+.prose-chat p { margin: 0 0 0.5rem; }
+.prose-chat ul, .prose-chat ol { margin: 0 0 0.5rem 1.1rem; list-style: disc; }
+.prose-chat ol { list-style: decimal; }
+.prose-chat code { background: #f1f5f9; border-radius: 4px; padding: 0 3px; font-size: 0.85em; }
+.prose-chat pre { background: #0b1626; color: #e2e8f0; border-radius: 6px; padding: 8px; overflow-x: auto; margin-bottom: 0.5rem; }
+.prose-chat pre code { background: none; color: inherit; }
+.prose-chat a { color: #2563eb; text-decoration: underline; }
+.prose-chat table { font-size: 0.8rem; border-collapse: collapse; margin-bottom: 0.5rem; }
+.prose-chat th, .prose-chat td { border: 1px solid #e2e8f0; padding: 2px 6px; }
+/* Marketing blocks (web/src/pages/Marketing.jsx) */
+.prose-mk > * + * { margin-top: 0.6rem; }
+.prose-mk h1 { font-size: 1.25rem; font-weight: 700; color: #0b1626; }
+.prose-mk h2 { font-size: 1.1rem; font-weight: 650; color: #0b1626; }
+.prose-mk h3 { font-size: 0.95rem; font-weight: 600; color: #0b1626; }
+.prose-mk ul, .prose-mk ol { margin-left: 1.2rem; list-style: disc; }
+.prose-mk ol { list-style: decimal; }
+.prose-mk li + li { margin-top: 0.2rem; }
+.prose-mk li:has(> input[type=checkbox]) { list-style: none; margin-left: -1.2rem; }
+.prose-mk input[type=checkbox] { margin-right: 0.4rem; accent-color: #f5a524; }
+.prose-mk blockquote { border-left: 3px solid #f5a524; padding-left: 0.75rem; color: #475569; }
+.prose-mk a { color: #2563eb; text-decoration: underline; }
+.prose-mk code { background: #f1f5f9; border-radius: 4px; padding: 0 3px; font-size: 0.85em; }
+.prose-mk table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+.prose-mk th { background: #f8fafc; text-align: left; font-weight: 600; }
+.prose-mk th, .prose-mk td { border: 1px solid #e2e8f0; padding: 4px 8px; vertical-align: top; }
+.prose-mk hr { border-color: #e2e8f0; }

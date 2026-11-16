@@ -1,0 +1,18 @@
+# Lightsail (or any Linux VM): `docker compose up -d --build`. Config in .env (see deploy/env.example).
+services:
+  crm:
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+      - ./data:/app/data            # SQLite DB, PDFs, contracts, chat runs
+      - ./claude-home:/home/node/.claude   # Claude CLI sessions (chat --resume)
+    # No published ports: only the tunnel reaches it.
+
+  tunnel:
+    image: cloudflare/cloudflared:latest
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run
+    environment:
+      - TUNNEL_TOKEN=${TUNNEL_TOKEN}
+    depends_on: [crm]

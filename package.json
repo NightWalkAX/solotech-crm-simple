@@ -1,0 +1,41 @@
+{
+  "name": "solotech-crm",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "concurrently -k -n api,chat,web -c blue,green,magenta \"npm:dev:api\" \"npm:dev:chat\" \"npm:dev:web\"",
+    "dev:api": "node --watch-path=server server/index.js",
+    "dev:chat": "node server/chat-worker.js",
+    "dev:web": "vite",
+    "import": "node scripts/import.js",
+    "build": "vite build",
+    "start": "concurrently -k -n api,chat,gw \"node server/index.js\" \"node server/chat-worker.js\" \"node server/gateway.js\""
+  },
+  "dependencies": {
+    "@dagrejs/dagre": "^3.1.1",
+    "@hono/node-server": "^2.1.3",
+    "@modelcontextprotocol/sdk": "^1.32.0",
+    "@tanstack/react-query": "^5.104.1",
+    "@xyflow/react": "^12.12.0",
+    "better-sqlite3": "^13.0.3",
+    "exceljs": "^4.4.0",
+    "hono": "^4.13.12",
+    "lucide-react": "^1.51.0",
+    "marked": "^18.1.0",
+    "playwright": "^1.63.0",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "react-markdown": "^10.1.0",
+    "react-router-dom": "^7.18.4",
+    "remark-gfm": "^4.0.1",
+    "web-push": "^3.6.7",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.3.3",
+    "@vitejs/plugin-react": "^6.1.1",
+    "concurrently": "^10.0.5",
+    "tailwindcss": "^4.3.3",
+    "vite": "^8.3.2"
+  }
+}
